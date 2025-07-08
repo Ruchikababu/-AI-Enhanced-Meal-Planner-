@@ -1,0 +1,238 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "=recipe-generator-{{some-unique-id}}",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cac25869-f4e7-43b5-9194-f81d765687fe",
+      "name": "Webhook",
+      "webhookId": "8bd7fb97-4df4-469a-89f7-d48d91c13040"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a detailed recipe for the user based on the following:\nIngredients: {{$json[\"body\"][\"Ingredients\"]}}\nDietary Preference: {{$json[\"body\"][\"Dietary Preference\"]}}\nConstraints: {{$json[\"body\"][\"Constraints\"]}}\n\nPlease include:\n- A title\n- Short description\n- Ingredients list\n- Step-by-step method\n- Optional variations\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "da71e8b9-f841-4711-ad8f-af4f6be2f45c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        200,
+        200
+      ],
+      "id": "72af4cf2-7499-462d-add1-46806a4d8e41",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Z3pJIeBPc7Yt9WfA",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ag2XYmUiv16Pt7lj748N4Sx40ZT5X-SyONjVG04VgAo",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2XYmUiv16Pt7lj748N4Sx40ZT5X-SyONjVG04VgAo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2XYmUiv16Pt7lj748N4Sx40ZT5X-SyONjVG04VgAo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "email": "={{ $('Webhook').item.json.body.Email }}",
+            "name": "={{ $('Webhook').item.json.body.Name }}",
+            "id": "={{ $('Webhook').item.json.body['Dietary Preference'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        640,
+        20
+      ],
+      "id": "1ed95ec7-2735-47a0-b0d6-97906eba73f7",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QFFyURzsUxxJE27U",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.Email }}",
+        "subject": "here is ur message",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        860,
+        20
+      ],
+      "id": "7892ea7b-e077-4be5-8698-ab43c11bd8ed",
+      "name": "Send a message",
+      "webhookId": "39bae614-7e60-4f51-87a4-ce5fe8f7a961",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cuchGw7evmPHDtvf",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "777ee232-34a4-4ae7-8001-efec1206dea5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e826d2f1c3cb173c1cb2233e327dc24b26c4e0922f801ad0edf0d7d112f50f03"
+  },
+  "id": "tYEhNbbqsOKSI26p",
+  "tags": []
+}
