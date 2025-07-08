@@ -1,0 +1,247 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1X03B_1V2SgLxkjriR_ho4fcMzdtwQknh8pOY4c2iM_0",
+          "mode": "list",
+          "cachedResultName": "info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X03B_1V2SgLxkjriR_ho4fcMzdtwQknh8pOY4c2iM_0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X03B_1V2SgLxkjriR_ho4fcMzdtwQknh8pOY4c2iM_0/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c55111a5-0518-4141-a985-e1a263f7dd0d",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "bjh54iafMU2IaM2Y",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a recipe using these ingredients: {{$json[\"body\"][\"ingredients\"]}}.\nDietary preference: {{$json[\"body\"][\"diet\"]}}.\nConstraints: {{$json[\"body\"][\"constraints\"]}}.\nProvide detailed steps and a short description.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "101e69f5-a8f1-4f89-9467-1b42c0b94abe",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        240,
+        220
+      ],
+      "id": "74fd839b-4fc7-42c0-9c2f-2807cabd9ca4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "LjzIjSWQLbqkZUGb",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1X03B_1V2SgLxkjriR_ho4fcMzdtwQknh8pOY4c2iM_0",
+          "mode": "list",
+          "cachedResultName": "info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X03B_1V2SgLxkjriR_ho4fcMzdtwQknh8pOY4c2iM_0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X03B_1V2SgLxkjriR_ho4fcMzdtwQknh8pOY4c2iM_0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "Name": "={{ $('Google Sheets Trigger').item.json.Email }}",
+            "Email": "={{ $('Google Sheets Trigger').item.json.Email }}",
+            "Ingredients": "={{ $('Google Sheets Trigger').item.json.Ingredients }}",
+            "Dietary Preference": "={{ $('Google Sheets Trigger').item.json['Dietary Preference'] }}",
+            "Constraints": "={{ $('Google Sheets Trigger').item.json.Constraints }}",
+            "Date": "={{ $('Google Sheets Trigger').item.json.Date }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ingredients",
+              "displayName": "Ingredients",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dietary Preference",
+              "displayName": "Dietary Preference",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Constraints",
+              "displayName": "Constraints",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        580,
+        0
+      ],
+      "id": "12218077-2b13-4768-b943-ae6dee19a10c",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wTfjzoynvCsoBswV",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e2214c29-1cf8-4332-9fed-a59b35216bb3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e826d2f1c3cb173c1cb2233e327dc24b26c4e0922f801ad0edf0d7d112f50f03"
+  },
+  "id": "wylb6qbRBLA7IPjM",
+  "tags": []
+}
